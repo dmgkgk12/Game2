@@ -7,20 +7,49 @@ public class Ship : MonoBehaviour
     [SerializeField]float speed = 10f;
     [SerializeField]float xRange = 5f;
     [SerializeField]float yRange = 5f;
+    [SerializeField]float positionPitchFactor = 0f;
+    [SerializeField]float controlPitchFactor = 0f;
+    [SerializeField]float positionYawFactor = 0f;
+    [SerializeField]float controlYawFactor = 0f;
+    [SerializeField]float controlRollFactor = 0f;
+    float hor;
+    float ver;
 
     void Update()
     {
-        float hor = Input.GetAxis("Horizontal");
-        float ver = Input.GetAxis("Vertical");
-        
+        ProcessTranslation();
+        ProcessRotation();
+    }
+
+    void ProcessRotation()
+    {
+        float pitchPos = transform.localPosition.y * positionPitchFactor;
+        float pitchCon = ver * controlPitchFactor;
+
+        float pitch = pitchPos + pitchCon;
+
+        float YawPos = transform.localPosition.x * positionYawFactor;
+        float YawCon = hor * controlYawFactor;
+
+        float yaw = YawPos + YawCon;
+
+        float roll = hor * controlRollFactor;
+
+        transform.localRotation=Quaternion.Euler(pitch,yaw,roll);
+    }
+    private void ProcessTranslation()
+    {
+        hor = Input.GetAxis("Horizontal");
+        ver = Input.GetAxis("Vertical");
+
         float xOffset = hor * Time.deltaTime * speed;
-        float newXpos= transform.localPosition.x + xOffset;
+        float newXpos = transform.localPosition.x + xOffset;
         float clampedXpos = Mathf.Clamp(newXpos, -xRange, xRange);
-        
+
         float yOffset = ver * Time.deltaTime * speed;
-        float newYpos= transform.localPosition.y + yOffset;
+        float newYpos = transform.localPosition.y + yOffset;
         float clampedYpos = Mathf.Clamp(newYpos, -yRange, yRange);
 
-        transform.localPosition = new Vector3(clampedXpos,clampedYpos,transform.localPosition.z);
+        transform.localPosition = new Vector3(clampedXpos, clampedYpos, transform.localPosition.z);
     }
 }
