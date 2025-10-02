@@ -12,6 +12,7 @@ public class Ship : MonoBehaviour
     [SerializeField]float positionYawFactor = 0f;
     [SerializeField]float controlYawFactor = 0f;
     [SerializeField]float controlRollFactor = 0f;
+    [SerializeField]GameObject[] lasers;
     float hor;
     float ver;
 
@@ -19,8 +20,29 @@ public class Ship : MonoBehaviour
     {
         ProcessTranslation();
         ProcessRotation();
+        ProcessFiring();
     }
-
+    
+    void ProcessFiring()
+    {
+        if(Input.GetButton("Fire1"))
+        {
+            SetLaserActive(true);
+        }
+        else
+        {
+            SetLaserActive(false);
+        }
+    }
+    void SetLaserActive(bool isActive)
+    {
+        foreach(GameObject beam in lasers)
+        {
+            var emissionModule = beam.GetComponent<ParticleSystem>().emission;
+            emissionModule.enabled=isActive;
+        }
+    }
+    
     void ProcessRotation()
     {
         float pitchPos = transform.localPosition.y * positionPitchFactor;
